@@ -12,7 +12,7 @@ const LoginWrapper = styled.div`
 
 const LeftPanel = styled.div`
   flex: 1;
-  background: url('/login.jpg') no-repeat center center;
+  background: url('/login.png') no-repeat center center;
   background-size: cover;
 `;
 

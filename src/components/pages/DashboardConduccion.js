@@ -8,24 +8,18 @@ const DashboardContainer = styled.div`
   height: 100vh;
 `;
 
-const Content = styled.div`
-  padding: 20px;
-`;
-
-const DashboardPasajeros = () => {
+const DashboardConduccion = () => {
   const handleLogout = () => {
+    // lógica de logout
     console.log('Cerrar sesión');
   };
 
   return (
     <DashboardContainer>
       <DashboardHeader onLogout={handleLogout} />
-      <Content>
-        <h1>Monitor de Pasajeros</h1>
-        {/* Aquí va el contenido de tu dashboard */}
-      </Content>
+      {/* Aquí colocarás el contenido específico del monitor de conducción */}
     </DashboardContainer>
   );
 };
 
-export default DashboardPasajeros;
+export default DashboardConduccion;
