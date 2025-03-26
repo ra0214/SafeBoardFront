@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -20,9 +20,19 @@ const LogoContainer = styled.div`
 const CompanyName = styled.h1`
   font-family: 'Playfair Display', serif;
   font-style: italic;
-  font-size: 24px;
+  font-weight: 300;
+  font-size: 28px;
   color: #ffffff;
   margin: 0;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  transform: skew(-12deg);
+  letter-spacing: 1.5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: skew(-15deg) scale(1.05);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  }
 `;
 
 const NavLinks = styled.div`
@@ -69,11 +79,19 @@ const Logo = styled.img`
 
 const DashboardHeader = ({ onLogout }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    navigate('/');  // Navega a la ruta raíz donde está el login
+  };
 
   return (
     <HeaderContainer>
       <LogoContainer>
-        <Logo src="/logo.png" alt="SafeBoard Logo" />
+        <Logo src="/transporte.png" alt="SafeBoard Logo" />
         <CompanyName>SafeBoard</CompanyName>
       </LogoContainer>
       
@@ -84,15 +102,22 @@ const DashboardHeader = ({ onLogout }) => {
         >
           Monitor de Pasajeros
         </StyledLink>
+
+        <StyledLink 
+          to="/total-pasajeros"
+          className={location.pathname === '/total-pasajeros' ? 'active' : ''}
+        >
+          Total de Pasajeros
+        </StyledLink>
         
         <StyledLink 
-          to="/monitor-conduccion"
+          to="/monitor-conduccion"  
           className={location.pathname === '/monitor-conduccion' ? 'active' : ''}
         >
           Monitor de Conducción
         </StyledLink>
         
-        <LogoutButton onClick={onLogout}>
+        <LogoutButton onClick={handleLogout}>
           Cerrar sesión
         </LogoutButton>
       </NavLinks>

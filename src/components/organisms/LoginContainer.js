@@ -46,7 +46,7 @@ const LoginContainer = () => {
     const handleLogin = (credentials) => {
         console.log('Intentando iniciar sesión con:', credentials);
         // Aquí irá tu lógica de autenticación
-        navigate('/home'); // Usar navigate para redireccionar
+        navigate('/monitor-pasajeros'); // Usar navigate para redireccionar
     };
 
   return (
