@@ -3,27 +3,28 @@ import styled from 'styled-components';
 import Input from '../atoms/Input';
 import Button from '../atoms/Button';
 
-const Container = styled.div`
+const Form = styled.form`
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-    background-color: #f5f5f5;
-`;
-
-const FormContainer = styled.form`
+    flex-direction: column;
+    gap: 15px;
     width: 100%;
-    max-width: 400px;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
 `;
 
-const Title = styled.h2`
-    margin-bottom: 20px;
-    color: #2c3e50;
+const Text = styled.label`
+    color: #4B3B5A;
+    font-size: 14px;
+    margin-bottom: -10px;
+    font-weight: 500;
+    text-align: left;
+    padding-left: 5px;
+`;
+
+const InputGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    align-items: flex-start;
 `;
 
 const LoginForm = ({ onSubmit }) => {
@@ -38,24 +39,27 @@ const LoginForm = ({ onSubmit }) => {
     };
 
     return (
-        <Container>
-            <FormContainer onSubmit={handleSubmit}>
-                <Title>LOGIN</Title>
+        <Form onSubmit={handleSubmit}>
+            <InputGroup>
+                <Text>Usuario</Text>
                 <Input
                     type="text"
-                    placeholder="Usuario"
+                    placeholder="Ingresa tu usuario"
                     value={credentials.username}
                     onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
                 />
+            </InputGroup>
+            <InputGroup>
+                <Text>Contraseña</Text>
                 <Input
                     type="password"
-                    placeholder="Contraseña"
+                    placeholder="Ingresa tu contraseña"
                     value={credentials.password}
                     onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                 />
-                <Button type="submit">Iniciar Sesión</Button>
-            </FormContainer>
-        </Container>
+            </InputGroup>
+            <Button type="submit">Iniciar Sesión</Button>
+        </Form>
     );
 };
 

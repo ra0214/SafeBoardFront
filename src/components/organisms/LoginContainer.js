@@ -8,15 +8,10 @@ const LoginWrapper = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
+  flex-direction: row; // Aseguramos que sea horizontal
 `;
 
-const LeftPanel = styled.div`
-  flex: 1;
-  background: url('/login.png') no-repeat center center;
-  background-size: cover;
-`;
-
-const RightPanel = styled.div`
+const FormPanel = styled.div`
   flex: 1;
   background-color: #083344;
   display: flex;
@@ -24,13 +19,33 @@ const RightPanel = styled.div`
   align-items: center;
 `;
 
+const ImagePanel = styled.div`
+  flex: 1;
+  background: url('/login.png') no-repeat center center;
+  background-size: cover;
+`;
+
 const StyledCard = styled(Card)`
   width: 100%;
   max-width: 400px;
   background: white;
-  padding: 40px;
+  padding: 0;
   box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
   border-radius: 8px;
+  overflow: hidden;
+`;
+
+const CardHeader = styled.div`
+  background-color: #4B3B5A;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+`;
+
+const CardContent = styled.div`
+  padding: 40px;
 `;
 
 const Title = styled.h2`
@@ -40,25 +55,53 @@ const Title = styled.h2`
   font-size: 24px;
 `;
 
-const LoginContainer = () => {
+const Logo = styled.img`
+  width: 80px;
+  height: auto;
+  margin-bottom: 20px;
+`;
+
+const RegisterLink = styled.p`
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  
+  a {
+    color: #5fa6bb;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+const LoginContainer = ({ onLoginSuccess }) => {
     const navigate = useNavigate();
 
     const handleLogin = (credentials) => {
         console.log('Intentando iniciar sesión con:', credentials);
-        // Aquí irá tu lógica de autenticación
-        navigate('/monitor-pasajeros'); // Usar navigate para redireccionar
+        if (onLoginSuccess) {
+            onLoginSuccess();
+        }
     };
 
-  return (
-    <LoginWrapper>
-      <LeftPanel />
-      <RightPanel>
-        <StyledCard>
-          <Title>Iniciar Sesión</Title>
-          <LoginForm onSubmit={handleLogin} />
-        </StyledCard>
-      </RightPanel>
-    </LoginWrapper>
+    return (
+      <LoginWrapper>
+          <ImagePanel />
+          <FormPanel>
+              <StyledCard>
+                  <CardHeader>LOGIN</CardHeader>
+                  <CardContent>
+                      <Logo src="/avatar.png" alt="SafeBoard Logo" />
+                      <Title>Iniciar Sesión</Title>
+                      <LoginForm onSubmit={handleLogin} />
+                      <RegisterLink>
+                          ¿No tienes cuenta? <a href="/register">Registrarse</a>
+                      </RegisterLink>
+                  </CardContent>
+              </StyledCard>
+          </FormPanel>
+      </LoginWrapper>
   );
 };
 
