@@ -1,18 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginContainer from '../organisms/LoginContainer';
 
-const LoginPage = ({ onLogin }) => {
+const LoginPage = () => {
     const navigate = useNavigate();
 
-    const handleLoginSuccess = () => {
-        if (onLogin) {
-            onLogin();
-            navigate('/monitor-pasajeros');
-        }
-    };
+    useEffect(() => {
+        // Redirige directamente a la página deseada
+        navigate('/monitor-pasajeros');
+    }, [navigate]);
 
-    return <LoginContainer onLoginSuccess={handleLoginSuccess} />;
+    return null; // No renderiza nada
 };
 
 export default LoginPage;

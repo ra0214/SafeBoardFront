@@ -8,7 +8,7 @@ import RegisterPage from './components/pages/RegisterPage';
 import { isAuthenticated, setAuthenticated } from './services/authService';
 
 const PrivateRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/" />;
+  return children; // Permite el acceso sin verificar autenticación
 };
 
 function App() {
