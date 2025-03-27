@@ -36,10 +36,16 @@ const RegisterForm = ({ onSubmit }) => {
     password: '',
     confirmPassword: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setIsLoading(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -51,37 +57,73 @@ const RegisterForm = ({ onSubmit }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        name="username"
-        placeholder="Nombre de usuario"
-        value={formData.username}
-        onChange={handleChange}
-      />
-      <Input
-        type="email"
-        name="email"
-        placeholder="Correo electrónico"
-        value={formData.email}
-        onChange={handleChange}
-      />
-      <Input
-        type="password"
-        name="password"
-        placeholder="Contraseña"
-        value={formData.password}
-        onChange={handleChange}
-      />
-      <Input
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirmar contraseña"
-        value={formData.confirmPassword}
-        onChange={handleChange}
-      />
-      <Button type="submit">Registrarse</Button>
+      <InputGroup>
+        <Text>Usuario</Text>
+        <Input
+          type="text"
+          name="username"
+          placeholder="Nombre de usuario"
+          value={formData.username}
+          onChange={handleChange}
+          disabled={isLoading}
+          required
+        />
+      </InputGroup>
+      <InputGroup>
+        <Text>Email</Text>
+        <Input
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          value={formData.email}
+          onChange={handleChange}
+          disabled={isLoading}
+          required
+        />
+      </InputGroup>
+      <InputGroup>
+        <Text>Contraseña</Text>
+        <Input
+          type="password"
+          name="password"
+          placeholder="Contraseña"
+          value={formData.password}
+          onChange={handleChange}
+          disabled={isLoading}
+          required
+          minLength={6}
+        />
+      </InputGroup>
+      <InputGroup>
+        <Text>Confirmar Contraseña</Text>
+        <Input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirmar contraseña"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          disabled={isLoading}
+          required
+        />
+      </InputGroup>
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? 'Registrando...' : 'Registrarse'}
+      </Button>
     </Form>
   );
 };
+
+const Text = styled.label`
+  color: #4B3B5A;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`;
 
 export default RegisterForm;

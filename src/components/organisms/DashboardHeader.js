@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { logout } from '../../services/authService';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -78,14 +79,14 @@ const Logo = styled.img`
 `;
 
 const DashboardHeader = ({ onLogout }) => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
     }
-    navigate('/');  // Navega a la ruta raíz donde está el login
+    navigate('/', { replace: true }); // Usamos replace para evitar que pueda volver atrás
   };
 
   return (

@@ -32,10 +32,16 @@ const LoginForm = ({ onSubmit }) => {
         username: '',
         password: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit(credentials);
+        setIsLoading(true);
+        try {
+            await onSubmit(credentials);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -47,6 +53,7 @@ const LoginForm = ({ onSubmit }) => {
                     placeholder="Ingresa tu usuario"
                     value={credentials.username}
                     onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                    disabled={isLoading}
                 />
             </InputGroup>
             <InputGroup>
@@ -56,9 +63,12 @@ const LoginForm = ({ onSubmit }) => {
                     placeholder="Ingresa tu contraseña"
                     value={credentials.password}
                     onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                    disabled={isLoading}
                 />
             </InputGroup>
-            <Button type="submit">Iniciar Sesión</Button>
+            <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+            </Button>
         </Form>
     );
 };

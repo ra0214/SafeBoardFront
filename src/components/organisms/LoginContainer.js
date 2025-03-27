@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import LoginForm from '../molecules/LoginForm';
 import Card from '../atoms/Card';
 import { useNavigate } from 'react-router-dom';
+import { loginUser, setAuthenticated } from '../../services/authService';
 
 const LoginWrapper = styled.div`
   display: flex;
@@ -64,7 +65,7 @@ const Logo = styled.img`
 const RegisterLink = styled.p`
   text-align: center;
   margin-top: 20px;
-  color: #666;
+  color: #000000;
   
   a {
     color: #5fa6bb;
@@ -75,13 +76,27 @@ const RegisterLink = styled.p`
   }
 `;
 
+const ErrorMessage = styled.p`
+  color: #ff0033;
+  text-align: center;
+  margin-bottom: 15px;
+`;
+
 const LoginContainer = ({ onLoginSuccess }) => {
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (credentials) => {
-        console.log('Intentando iniciar sesión con:', credentials);
-        if (onLoginSuccess) {
-            onLoginSuccess();
+    const handleLogin = async (credentials) => {
+        try {
+            const response = await loginUser(credentials);
+            setAuthenticated(true); // Marca como autenticado
+            console.log('Login exitoso:', response);
+            if (onLoginSuccess) {
+                onLoginSuccess();
+            }
+        } catch (error) {
+            console.error('Error en el login:', error);
+            setError(error.message);
         }
     };
 
@@ -94,6 +109,7 @@ const LoginContainer = ({ onLoginSuccess }) => {
                   <CardContent>
                       <Logo src="/avatar.png" alt="SafeBoard Logo" />
                       <Title>Iniciar Sesión</Title>
+                      {error && <ErrorMessage>{error}</ErrorMessage>}
                       <LoginForm onSubmit={handleLogin} />
                       <RegisterLink>
                           ¿No tienes cuenta? <a href="/register">Registrarse</a>
