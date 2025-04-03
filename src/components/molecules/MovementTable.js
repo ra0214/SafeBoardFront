@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { fetchMovimientosBruscos } from '../../services/apiService';
 
 const TableContainer = styled.div`
   margin: 20px;
@@ -40,31 +41,37 @@ const TableCell = styled.td`
 `;
 
 const MovementTable = () => {
+  const [movimientos, setMovimientos] = useState([]); 
+
+  useEffect(() => {
+    fetchMovimientosBruscos((data) => {
+      const movimientosConHora = data.map((movimiento) => ({
+        ...movimiento,
+        hora: new Date().toLocaleTimeString(), 
+      }));
+      setMovimientos(movimientosConHora);
+    });
+  }, []);
+
   return (
     <TableContainer>
       <Table>
         <thead>
           <tr>
-            <TableHeader colSpan="2">Movimientos Bruscos</TableHeader> {/* Encabezado que abarca todo */}
+            <TableHeader colSpan="2">Movimientos Bruscos</TableHeader>
           </tr>
           <tr>
             <TableHeader>Hora del evento</TableHeader>
-            <TableHeader>Frecuencia</TableHeader>
+            <TableHeader>Aceleración</TableHeader>
           </tr>
         </thead>
         <tbody>
-          <TableRow>
-            <TableCell>08:00</TableCell>
-            <TableCell>5</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>09:00</TableCell>
-            <TableCell>3</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>10:00</TableCell>
-            <TableCell>8</TableCell>
-          </TableRow>
+          {movimientos.map((movimiento, index) => (
+            <TableRow key={index}>
+              <TableCell>{movimiento.hora}</TableCell>
+              <TableCell>{movimiento.aceleracion}</TableCell>
+            </TableRow>
+          ))}
         </tbody>
       </Table>
     </TableContainer>
