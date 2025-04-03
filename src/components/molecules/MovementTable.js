@@ -9,11 +9,10 @@ const TableContainer = styled.div`
   text-align: center;
 `;
 
-const Title = styled.h2`
-  margin-bottom: 10px;
-  color: #4B3B5A;
-  font-size: 20px;
-  font-weight: bold;
+const TableWrapper = styled.div`
+  max-height: 200px; 
+  overflow-y: auto; 
+  border: 1px solid #ddd; 
 `;
 
 const Table = styled.table`
@@ -55,25 +54,27 @@ const MovementTable = () => {
 
   return (
     <TableContainer>
-      <Table>
-        <thead>
-          <tr>
-            <TableHeader colSpan="2">Movimientos Bruscos</TableHeader>
-          </tr>
-          <tr>
-            <TableHeader>Hora del evento</TableHeader>
-            <TableHeader>Aceleración</TableHeader>
-          </tr>
-        </thead>
-        <tbody>
-          {movimientos.map((movimiento, index) => (
-            <TableRow key={index}>
-              <TableCell>{movimiento.hora}</TableCell>
-              <TableCell>{movimiento.aceleracion}</TableCell>
-            </TableRow>
-          ))}
-        </tbody>
-      </Table>
+      <TableWrapper>
+        <Table>
+          <thead>
+            <tr>
+              <TableHeader colSpan="2">Movimientos Bruscos</TableHeader>
+            </tr>
+            <tr>
+              <TableHeader>Hora del evento</TableHeader>
+              <TableHeader>Aceleración</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {movimientos.map((movimiento, index) => (
+              <TableRow key={index}>
+                <TableCell>{movimiento.hora}</TableCell>
+                <TableCell>{movimiento.aceleracion}</TableCell>
+              </TableRow>
+            ))}
+          </tbody>
+        </Table>
+      </TableWrapper>
     </TableContainer>
   );
 };

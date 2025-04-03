@@ -10,6 +10,12 @@ const HeaderContainer = styled.header`
   background-color: #5fa6bb;
   padding: 10px 20px;
   height: 70px;
+  width: 100%; 
+  box-sizing: border-box; 
+  position: fixed; 
+  top: 0;
+  left: 0;
+  z-index: 1000; 
 `;
 
 const LogoContainer = styled.div`
@@ -86,7 +92,7 @@ const DashboardHeader = ({ onLogout }) => {
     if (onLogout) {
       onLogout();
     }
-    navigate('/', { replace: true }); // Usamos replace para evitar que pueda volver atrás
+    navigate('/', { replace: true }); 
   };
 
   return (
