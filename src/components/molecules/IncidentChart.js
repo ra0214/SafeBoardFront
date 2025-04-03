@@ -5,6 +5,7 @@ const data = [
   { hora: '08:00', incidentes: 5 },
   { hora: '09:00', incidentes: 3 },
   { hora: '10:00', incidentes: 8 },
+  { hora: '11:00', incidentes: 15 },
 ];
 
 const IncidentChart = () => {

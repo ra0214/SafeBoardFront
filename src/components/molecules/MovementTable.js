@@ -65,6 +65,10 @@ const MovementTable = () => {
             <TableCell>10:00</TableCell>
             <TableCell>8</TableCell>
           </TableRow>
+          <TableRow>
+            <TableCell>11:00</TableCell>
+            <TableCell>15</TableCell>
+          </TableRow>
         </tbody>
       </Table>
     </TableContainer>

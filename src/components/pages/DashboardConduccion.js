@@ -10,14 +10,14 @@ import IncidentChart from '../molecules/IncidentChart';
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: auto; /* Permite que el contenido determine la altura */
-  min-height: 100vh; /* Asegura que ocupe al menos toda la pantalla */
-  background-color: #f5f6fa; /* Fondo claro */
+  height: auto;
+  min-height: 100vh;
+  background-color: #f5f6fa;
 `;
 
 const Content = styled.div`
   padding: 20px;
-  flex: 1; /* Permite que el contenido crezca */
+  flex: 1;
 `;
 
 const DashboardConduccion = ({ onLogout }) => {

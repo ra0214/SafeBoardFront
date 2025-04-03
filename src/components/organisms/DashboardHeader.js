@@ -7,7 +7,7 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #5fa6bb;
+  background-color: #022E40;
   padding: 10px 20px;
   height: 70px;
 `;
@@ -50,7 +50,7 @@ const StyledLink = styled(Link)`
   transition: all 0.3s ease;
   
   &.active {
-    background-color: #457b8c;
+    background-color: #3E597B;
     font-weight: bold;
   }
   

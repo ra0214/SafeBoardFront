@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const TableContainer = styled.div`
@@ -11,14 +11,14 @@ const TableContainer = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const TableHeader = styled.div`
-  background-color:#4B3B5A;
-  color: white;
+const TableHeader = styled.thead`
+  background-color: #f5f5f5;
+`;
+
+const TableHeaderCell = styled.th`
   padding: 10px;
-  font-weight: bold;
   text-align: center;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border: 1px solid #ddd;
 `;
 
 const Table = styled.table`
@@ -38,26 +38,24 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
-const PassengerCounter = ({ title, fetchData }) => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const result = await fetchData();
-      setData(result);
-    };
-
-    loadData();
-  }, [fetchData]);
-
+const PassengerCounter = ({ title, data = [] }) => {
   return (
     <TableContainer>
       <TableHeader>{title}</TableHeader>
       <Table>
+        <TableHeader>
+          <tr>
+            <TableHeaderCell>ID ESP32</TableHeaderCell>
+            <TableHeaderCell>Cantidad</TableHeaderCell>
+            <TableHeaderCell>Hora</TableHeaderCell>
+          </tr>
+        </TableHeader>
         <tbody>
           {data.map((item, index) => (
             <TableRow key={index}>
-              <TableCell>{item}</TableCell>
+              <TableCell>{item.esp32_id}</TableCell>
+              <TableCell>{item.conteo}</TableCell>
+              <TableCell>{new Date().toLocaleTimeString()}</TableCell>
             </TableRow>
           ))}
         </tbody>
