@@ -7,20 +7,26 @@ import { logout } from '../../services/authService';
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #f5f6fa;
+  padding-top: 70px;
 `;
 
 const Content = styled.div`
   padding: 20px;
-  background-color: #f5f6fa;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const TotalCard = styled.div`
   background-color: white;
   border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 600px;
+  width: 100%;
 `;
 
 const Title = styled.h1`
@@ -46,15 +52,14 @@ const DashboardTotal = ({ onLogout }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); // Limpia el localStorage
+    logout();
     if (onLogout) {
-      onLogout(); // Actualiza el estado en App.js
+      onLogout();
     }
-    navigate('/', { replace: true }); // Fuerza la redirección al login
+    navigate('/', { replace: true });
   };
 
-  // Aquí podrías agregar la lógica para obtener el total real de pasajeros
-  const totalPasajeros = 150; // Este valor debería venir de tu backend
+  const totalPasajeros = 150;
 
   return (
     <DashboardContainer>
@@ -65,7 +70,7 @@ const DashboardTotal = ({ onLogout }) => {
           <Label>Total de pasajeros del día</Label>
           <TotalNumber>{totalPasajeros}</TotalNumber>
         </TotalCard>
-        {/* Aquí puedes agregar más tarjetas con diferentes métricas */}
+        {}
       </Content>
     </DashboardContainer>
   );

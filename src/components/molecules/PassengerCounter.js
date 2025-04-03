@@ -55,7 +55,7 @@ const PassengerCounter = ({ title, data = [] }) => {
             <TableRow key={index}>
               <TableCell>{item.esp32_id}</TableCell>
               <TableCell>{item.conteo}</TableCell>
-              <TableCell>{new Date().toLocaleTimeString()}</TableCell>
+              <TableCell>{item.hora || new Date().toLocaleTimeString()}</TableCell>
             </TableRow>
           ))}
         </tbody>

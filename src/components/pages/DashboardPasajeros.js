@@ -5,24 +5,30 @@ import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/authService';
 import PassengerCounter from '../molecules/PassengerCounter';
 import { TOPICS, connectMQTTCounter } from '../../services/mqttService';
+import { fetchPasajeros } from '../../services/apiService';
 
 const DashboardContainer = styled.div`
-   display: flex;
+  display: flex;
   flex-direction: column;
-  height: auto; /* Permite que el contenido determine la altura */
-  min-height: 100vh; /* Asegura que ocupe al menos toda la pantalla */
-  background-color: #f5f6fa; /* Fondo claro */
+  min-height: 100vh;
+  background-color: #f5f6fa;
+  padding-top: 70px;
 `;
 
 const Content = styled.div`
   padding: 20px;
-  flex: 1; /* Permite que el contenido crezca */
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const CountersContainer = styled.div`
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
   margin-top: 20px;
+  width: 100%;
 `;
 
 const DashboardPasajeros = ({ onLogout }) => {
@@ -31,14 +37,16 @@ const DashboardPasajeros = ({ onLogout }) => {
   const [bajadasData, setBajadasData] = useState([]);
 
   useEffect(() => {
-    console.log('Iniciando conexiones MQTT...');
-    const disconnectSubidas = connectMQTTCounter(TOPICS.PERSONAS_SUBEN, setSubidasData);
+    // Obtener datos de la API para personas que suben
+    fetchPasajeros(setSubidasData);
+
+    // Mantener la conexión MQTT para personas que bajan
     const disconnectBajadas = connectMQTTCounter(TOPICS.PERSONAS_BAJAN, setBajadasData);
 
     return () => {
-      console.log('Limpiando conexiones MQTT...');
-      disconnectSubidas();
-      disconnectBajadas();
+      if (disconnectBajadas) {
+        disconnectBajadas();
+      }
     };
   }, []);
 
@@ -54,7 +62,6 @@ const DashboardPasajeros = ({ onLogout }) => {
     <DashboardContainer>
       <DashboardHeader onLogout={handleLogout} />
       <Content>
-        <h1>Monitor de Pasajeros</h1>
         <CountersContainer>
           <PassengerCounter 
             title="Personas que Suben" 
