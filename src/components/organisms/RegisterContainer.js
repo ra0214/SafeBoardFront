@@ -97,9 +97,6 @@ const RegisterContainer = () => {
                     <Title>Crear Cuenta</Title>
                     {error && <ErrorMessage>{error}</ErrorMessage>}
                     <RegisterForm onSubmit={handleRegister} />
-                    <LoginLink>
-                        ¿Ya tienes cuenta? <a href="/">Iniciar sesión</a>
-                    </LoginLink>
                 </CardContent>
             </StyledCard>
         </FormPanel>

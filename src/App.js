@@ -2,31 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
 import DashboardPasajeros from './components/pages/DashboardPasajeros';
-import DashboardConduccion from './components/pages/DashboardConduccion';
 import DashboardTotal from './components/pages/DashboardTotal';
+import DashboardConduccion from './components/pages/DashboardConduccion';
 import RegisterPage from './components/pages/RegisterPage';
-import { isAuthenticated, setAuthenticated } from './services/authService';
-
-const PrivateRoute = ({ children }) => {
-  return children; // Permite el acceso sin verificar autenticación
-};
 
 function App() {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const auth = isAuthenticated();
-    setIsAuth(auth);
+    const user = JSON.parse(localStorage.getItem('user'));
+    setIsAuthenticated(!!user);
+    setIsAdmin(user?.userName === 'admin');
   }, []);
 
-  const handleLogin = () => {
-    setAuthenticated(true);
-    setIsAuth(true);
+  const handleLoginSuccess = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setIsAuthenticated(true);
+    setIsAdmin(user?.userName === 'admin');
   };
 
   const handleLogout = () => {
-    setAuthenticated(false);
-    setIsAuth(false);
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setIsAdmin(false);
   };
 
   return (
@@ -35,44 +34,49 @@ function App() {
         <Route 
           path="/" 
           element={
-            isAuth ? 
+            isAuthenticated ? 
             <Navigate to="/monitor-pasajeros" /> : 
-            <LoginPage onLogin={handleLogin} />
+            <LoginPage onLoginSuccess={handleLoginSuccess} />
           } 
         />
-        <Route 
-          path="/register" 
-          element={
-            isAuth ? 
-            <Navigate to="/monitor-pasajeros" /> : 
-            <RegisterPage />
-          } 
-        />
+        
         <Route 
           path="/monitor-pasajeros" 
           element={
-            <PrivateRoute>
-              <DashboardPasajeros onLogout={handleLogout} />
-            </PrivateRoute>
+            isAuthenticated ? 
+            <DashboardPasajeros onLogout={handleLogout} /> : 
+            <Navigate to="/" />
           } 
         />
+        
         <Route 
-          path="/total-pasajeros"
+          path="/register" 
           element={
-            <PrivateRoute>
-              <DashboardTotal onLogout={handleLogout} />
-            </PrivateRoute>
-          }
+            isAuthenticated && isAdmin ? 
+            <RegisterPage onLogout={handleLogout} /> : 
+            <Navigate to="/monitor-pasajeros" />
+          } 
         />
+
+        <Route 
+          path="/total-pasajeros" 
+          element={
+            isAuthenticated ? 
+            <DashboardTotal onLogout={handleLogout} /> : 
+            <Navigate to="/" />
+          } 
+        />
+
         <Route 
           path="/monitor-conduccion" 
           element={
-            <PrivateRoute>
-              <DashboardConduccion onLogout={handleLogout} />
-            </PrivateRoute>
+            isAuthenticated ? 
+            <DashboardConduccion onLogout={handleLogout} /> : 
+            <Navigate to="/" />
           } 
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

@@ -89,11 +89,14 @@ const LoginContainer = ({ onLoginSuccess }) => {
     const handleLogin = async (credentials) => {
         try {
             const response = await loginUser(credentials);
-            setAuthenticated(true); // Marca como autenticado
-            console.log('Login exitoso:', response);
+            // Guardamos toda la información del usuario incluyendo el esp32_id
+            localStorage.setItem('user', JSON.stringify(response));
+            
             if (onLoginSuccess) {
                 onLoginSuccess();
             }
+
+            navigate('/monitor-pasajeros');
         } catch (error) {
             console.error('Error en el login:', error);
             setError(error.message);
@@ -111,9 +114,6 @@ const LoginContainer = ({ onLoginSuccess }) => {
                       <Title>Iniciar Sesión</Title>
                       {error && <ErrorMessage>{error}</ErrorMessage>}
                       <LoginForm onSubmit={handleLogin} />
-                      <RegisterLink>
-                          ¿No tienes cuenta? <a href="/register">Registrarse</a>
-                      </RegisterLink>
                   </CardContent>
               </StyledCard>
           </FormPanel>

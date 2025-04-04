@@ -4,25 +4,44 @@ import styled from 'styled-components';
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Label = styled.label`
+  color: #4B3B5A;
+  font-size: 14px;
+  font-weight: 500;
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px;
+  border: 1px solid #dcdde1;
+  border-radius: 5px;
   font-size: 16px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #5fa6bb;
+  }
 `;
 
 const Button = styled.button`
+  padding: 12px;
   background-color: #5fa6bb;
   color: white;
-  padding: 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 10px;
 
   &:hover {
     background-color: #4a8599;
@@ -31,22 +50,11 @@ const Button = styled.button`
 
 const RegisterForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
-    username: '',
+    userName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    esp32_id: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await onSubmit(formData);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -55,75 +63,60 @@ const RegisterForm = ({ onSubmit }) => {
     });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
   return (
     <Form onSubmit={handleSubmit}>
       <InputGroup>
-        <Text>Usuario</Text>
+        <Label>Nombre de Usuario</Label>
         <Input
           type="text"
-          name="username"
-          placeholder="Nombre de usuario"
-          value={formData.username}
+          name="userName"
+          value={formData.userName}
           onChange={handleChange}
-          disabled={isLoading}
           required
         />
       </InputGroup>
+
       <InputGroup>
-        <Text>Email</Text>
+        <Label>Correo Electrónico</Label>
         <Input
           type="email"
           name="email"
-          placeholder="Correo electrónico"
           value={formData.email}
           onChange={handleChange}
-          disabled={isLoading}
           required
         />
       </InputGroup>
+
       <InputGroup>
-        <Text>Contraseña</Text>
+        <Label>Contraseña</Label>
         <Input
           type="password"
           name="password"
-          placeholder="Contraseña"
           value={formData.password}
           onChange={handleChange}
-          disabled={isLoading}
           required
-          minLength={6}
         />
       </InputGroup>
+
       <InputGroup>
-        <Text>Confirmar Contraseña</Text>
+        <Label>ID del ESP32</Label>
         <Input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirmar contraseña"
-          value={formData.confirmPassword}
+          type="text"
+          name="esp32_id"
+          value={formData.esp32_id}
           onChange={handleChange}
-          disabled={isLoading}
           required
         />
       </InputGroup>
-      <Button type="submit" disabled={isLoading}>
-        {isLoading ? 'Registrando...' : 'Registrarse'}
-      </Button>
+
+      <Button type="submit">Registrar Usuario</Button>
     </Form>
   );
 };
-
-const Text = styled.label`
-  color: #4B3B5A;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 5px;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`;
 
 export default RegisterForm;

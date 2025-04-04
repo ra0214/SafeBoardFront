@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080';
+const API_URL = 'http://52.5.61.144:8080';
 
 export const loginUser = async (credentials) => {
     try {
@@ -15,10 +15,12 @@ export const loginUser = async (credentials) => {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || 'Error en el inicio de sesión');
+            throw new Error(error.error || 'Credenciales inválidas');
         }
 
-        return await response.json();
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data.user));
+        return data;
     } catch (error) {
         throw error;
     }
@@ -50,18 +52,18 @@ export const registerUser = async (userData) => {
 };
 
 export const isAuthenticated = () => {
-    return localStorage.getItem('isAuthenticated') === 'true';
+    const user = localStorage.getItem('user');
+    return !!user;
 };
 
 export const setAuthenticated = (value) => {
-    if (value) {
-        localStorage.setItem('isAuthenticated', 'true');
-    } else {
-        localStorage.removeItem('isAuthenticated');
+    if (!value) {
+        localStorage.removeItem('user');
     }
 };
 
 export const logout = () => {
-    localStorage.clear(); // Limpia todo el localStorage
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
     return true;
 };

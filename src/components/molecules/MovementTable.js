@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { fetchMovimientosBruscos } from '../../services/apiService';
 
 const TableContainer = styled.div`
   margin: 20px;
@@ -40,16 +39,33 @@ const TableCell = styled.td`
 `;
 
 const MovementTable = () => {
-  const [movimientos, setMovimientos] = useState([]); 
+  const [movements, setMovements] = useState([]);
 
   useEffect(() => {
-    fetchMovimientosBruscos((data) => {
-      const movimientosConHora = data.map((movimiento) => ({
-        ...movimiento,
-        hora: new Date().toLocaleTimeString(), 
-      }));
-      setMovimientos(movimientosConHora);
-    });
+    const fetchMovements = async () => {
+      try {
+        const response = await fetch('http://52.5.61.144:8080/movement');
+        const data = await response.json();
+        
+        const formattedData = data.map(item => ({
+          ...item,
+          hora: new Date(item.created_at).toLocaleTimeString('es-MX', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          })
+        }));
+        
+        setMovements(formattedData);
+      } catch (error) {
+        console.error('Error al cargar movimientos:', error);
+      }
+    };
+
+    fetchMovements();
+    const interval = setInterval(fetchMovements, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -66,12 +82,18 @@ const MovementTable = () => {
             </tr>
           </thead>
           <tbody>
-            {movimientos.map((movimiento, index) => (
-              <TableRow key={index}>
-                <TableCell>{movimiento.hora}</TableCell>
-                <TableCell>{movimiento.aceleracion}</TableCell>
+            {movements.length > 0 ? (
+              movements.map((movement, index) => (
+                <TableRow key={index}>
+                  <TableCell>{movement.hora}</TableCell>
+                  <TableCell>{movement.aceleracion}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan="2">No hay datos disponibles</TableCell>
               </TableRow>
-            ))}
+            )}
           </tbody>
         </Table>
       </TableWrapper>

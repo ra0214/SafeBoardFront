@@ -4,8 +4,6 @@ import DashboardHeader from '../organisms/DashboardHeader';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/authService';
 import PassengerCounter from '../molecules/PassengerCounter';
-import { TOPICS, connectMQTTCounter } from '../../services/mqttService';
-import { fetchPasajeros } from '../../services/apiService';
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -37,17 +35,48 @@ const DashboardPasajeros = ({ onLogout }) => {
   const [bajadasData, setBajadasData] = useState([]);
 
   useEffect(() => {
-    // Obtener datos de la API para personas que suben
-    fetchPasajeros(setSubidasData);
+    const fetchData = async () => {
+      try {
+        const responseUp = await fetch('http://52.5.61.144:8080/peopleGoUpTest');
+        const dataUp = await responseUp.json();
+        setSubidasData(dataUp.map(item => {
+          const date = new Date(item.created_at);
+          const formattedTime = date.toLocaleString('es-MX', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          });
+          return {
+            ...item,
+            hora: formattedTime
+          };
+        }));
 
-    // Mantener la conexión MQTT para personas que bajan
-    const disconnectBajadas = connectMQTTCounter(TOPICS.PERSONAS_BAJAN, setBajadasData);
-
-    return () => {
-      if (disconnectBajadas) {
-        disconnectBajadas();
+        // Cargar datos de personas que bajan
+        const responseDown = await fetch('http://52.5.61.144:8080/peopleGoDown');
+        const dataDown = await responseDown.json();
+        setBajadasData(dataDown.map(item => {
+          const date = new Date(item.created_at);
+          const formattedTime = date.toLocaleString('es-MX', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          });
+          return {
+            ...item,
+            hora: formattedTime
+          };
+        }));
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
       }
     };
+
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
@@ -65,11 +94,11 @@ const DashboardPasajeros = ({ onLogout }) => {
         <CountersContainer>
           <PassengerCounter 
             title="Personas que Suben" 
-            data={subidasData}
+            data={subidasData} 
           />
           <PassengerCounter 
             title="Personas que Bajan" 
-            data={bajadasData}
+            data={bajadasData} 
           />
         </CountersContainer>
       </Content>

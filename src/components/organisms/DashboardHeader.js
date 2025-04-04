@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { logout } from '../../services/authService';
+import { Link } from 'react-router-dom';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -86,15 +85,12 @@ const Logo = styled.img`
 `;
 
 const DashboardHeader = ({ onLogout }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
-    navigate('/', { replace: true }); 
-  };
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setIsAdmin(user?.userName === 'admin');
+  }, []);
 
   return (
     <HeaderContainer>
@@ -104,30 +100,20 @@ const DashboardHeader = ({ onLogout }) => {
       </LogoContainer>
       
       <NavLinks>
-        <StyledLink 
-          to="/monitor-pasajeros" 
-          className={location.pathname === '/monitor-pasajeros' ? 'active' : ''}
-        >
-          Monitor de Pasajeros
-        </StyledLink>
-
-        <StyledLink 
-          to="/total-pasajeros"
-          className={location.pathname === '/total-pasajeros' ? 'active' : ''}
-        >
-          Total de Pasajeros
-        </StyledLink>
-        
-        <StyledLink 
-          to="/monitor-conduccion"  
-          className={location.pathname === '/monitor-conduccion' ? 'active' : ''}
-        >
-          Monitor de Conducción
-        </StyledLink>
-        
-        <LogoutButton onClick={handleLogout}>
-          Cerrar sesión
-        </LogoutButton>
+        <StyledLink to="/monitor-pasajeros">Monitor Pasajeros</StyledLink>
+        <StyledLink to="/total-pasajeros">Total Pasajeros</StyledLink>
+        <StyledLink to="/monitor-conduccion">Monitor Conducción</StyledLink>
+        {isAdmin && (
+          <StyledLink 
+            to="/register" 
+            style={{ 
+              color: 'white',
+            }}
+          >
+            Registrar Usuario
+          </StyledLink>
+        )}
+        <LogoutButton onClick={onLogout}>Cerrar Sesión</LogoutButton>
       </NavLinks>
     </HeaderContainer>
   );
