@@ -46,17 +46,23 @@ const MovementTable = () => {
       try {
         const response = await fetch('http://52.5.61.144:8080/movement');
         const data = await response.json();
-        
-        const formattedData = data.map(item => ({
-          ...item,
-          hora: new Date(item.created_at).toLocaleTimeString('es-MX', {
+
+        const formattedData = data.map(item => {
+          // Generar la hora actual en el frontend
+          const now = new Date();
+          const formattedTime = now.toLocaleTimeString('es-MX', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false
-          })
-        }));
-        
+          });
+
+          return {
+            ...item,
+            hora: formattedTime // Agregar la hora generada al objeto
+          };
+        });
+
         setMovements(formattedData);
       } catch (error) {
         console.error('Error al cargar movimientos:', error);
