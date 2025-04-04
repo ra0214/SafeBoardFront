@@ -106,7 +106,7 @@ const DashboardTotal = ({ onLogout }) => {
   useEffect(() => {
     const fetchTotalPasajeros = async () => {
       try {
-        const response = await fetch('http://52.5.61.144:8080/peopleGoUp');
+        const response = await fetch('http://127.0.0.1:8080/peopleGoUp');
         const data = await response.json();
         
         // Filtrar datos según ESP32_ID si no es admin

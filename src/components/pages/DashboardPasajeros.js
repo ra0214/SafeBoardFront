@@ -4,8 +4,6 @@ import DashboardHeader from '../organisms/DashboardHeader';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/authService';
 import PassengerCounter from '../molecules/PassengerCounter';
-import { parse, format } from 'date-fns';
-import { es } from 'date-fns/locale';
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -39,49 +37,37 @@ const DashboardPasajeros = ({ onLogout }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch para personas que suben
+        // Cargar datos de personas que suben
         const responseUp = await fetch('http://52.5.61.144:8080/peopleGoUpTest');
         const dataUp = await responseUp.json();
-        console.log('Datos recibidos de personas que suben:', dataUp);
-
         setSubidasData(dataUp.map(item => {
-          // Generar la hora actual en el frontend
-          const now = new Date();
-          const formattedTime = now.toLocaleTimeString('es-MX', {
+          const date = new Date(item.created_at);
+          const formattedTime = date.toLocaleString('es-MX', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false
           });
-
-          console.log('Hora generada (subidas):', formattedTime);
-
           return {
             ...item,
-            hora: formattedTime // Agregar la hora generada al objeto
+            hora: formattedTime
           };
         }));
 
-        // Fetch para personas que bajan
+        // Cargar datos de personas que bajan
         const responseDown = await fetch('http://52.5.61.144:8080/peopleGoDown');
         const dataDown = await responseDown.json();
-        console.log('Datos recibidos de personas que bajan:', dataDown);
-
         setBajadasData(dataDown.map(item => {
-          // Generar la hora actual en el frontend
-          const now = new Date();
-          const formattedTime = now.toLocaleTimeString('es-MX', {
+          const date = new Date(item.created_at);
+          const formattedTime = date.toLocaleString('es-MX', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false
           });
-
-          console.log('Hora generada (bajadas):', formattedTime);
-
           return {
             ...item,
-            hora: formattedTime // Agregar la hora generada al objeto
+            hora: formattedTime
           };
         }));
       } catch (error) {
