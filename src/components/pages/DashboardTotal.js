@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import DashboardHeader from '../organisms/DashboardHeader';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/authService';
+import { fetchPasajeros } from '../../services/apiService';
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -90,40 +91,23 @@ const ResultLabel = styled(Label)`
 const DashboardTotal = ({ onLogout }) => {
   const navigate = useNavigate();
   const [precio, setPrecio] = useState('');
-  const [totalIngresos, setTotalIngresos] = useState(() => {
-    const savedIngresos = localStorage.getItem('totalIngresos');
-    return savedIngresos ? parseFloat(savedIngresos) : 0;
-  });
-  const [totalPasajeros, setTotalPasajeros] = useState(() => {
-    const savedTotal = localStorage.getItem('totalPasajeros');
-    return savedTotal ? parseInt(savedTotal) : 0;
-  });
-
-  // Obtener el usuario y su ESP32_ID del localStorage
-  const user = JSON.parse(localStorage.getItem('user'));
-  const isAdmin = user?.userName === 'admin';
+  const [totalIngresos, setTotalIngresos] = useState(0);
+  const [totalPasajeros, setTotalPasajeros] = useState(0);
 
   useEffect(() => {
-    const fetchTotalPasajeros = async () => {
+    const obtenerPasajeros = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8080/peopleGoUp');
-        const data = await response.json();
-        
-        // Filtrar datos según ESP32_ID si no es admin
-        const filteredData = isAdmin ? data : data.filter(item => item.esp32_id === user.esp32_id);
-        const total = filteredData.reduce((sum, item) => sum + item.conteo, 0);
-        
-        setTotalPasajeros(total);
-        localStorage.setItem('totalPasajeros', total.toString());
+        await fetchPasajeros((data) => {
+          const total = data.reduce((sum, item) => sum + item.conteo, 0);
+          setTotalPasajeros(total);
+        });
       } catch (error) {
-        console.error('Error al obtener el total:', error);
+        console.error('Error al obtener los datos de pasajeros:', error);
       }
     };
 
-    fetchTotalPasajeros();
-    const interval = setInterval(fetchTotalPasajeros, 5000);
-    return () => clearInterval(interval);
-  }, [user?.esp32_id, isAdmin]);
+    obtenerPasajeros();
+  }, []);
 
   const calcularIngresos = () => {
     if (!precio || isNaN(precio)) {
@@ -132,16 +116,10 @@ const DashboardTotal = ({ onLogout }) => {
     }
     const ingresos = totalPasajeros * parseFloat(precio);
     setTotalIngresos(ingresos);
-    localStorage.setItem('totalIngresos', ingresos.toString());
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('totalIngresos');
-    localStorage.removeItem('totalPasajeros');
     logout();
-    if (onLogout) {
-      onLogout();
-    }
     navigate('/', { replace: true });
   };
 
@@ -151,7 +129,7 @@ const DashboardTotal = ({ onLogout }) => {
       <Content>
         <Title>Total de Pasajeros</Title>
         <TotalCard>
-          <Label>Total de pasajeros del día</Label>
+          <Label>Total de pasajeros que subieron</Label>
           <TotalNumber>{totalPasajeros}</TotalNumber>
         </TotalCard>
         

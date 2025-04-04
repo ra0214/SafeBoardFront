@@ -16,7 +16,7 @@ export async function fetchMovimientosBruscos(setData) {
 
 export async function fetchPasajeros(setData) {
     try {
-        const response = await fetch(`${BASE_API_URL}/peopleGoUp`); 
+        const response = await fetch(`${BASE_API_URL}/peopleGoUpTest`); 
         if (!response.ok) {
             throw new Error('Error al obtener los datos de pasajeros');
         }

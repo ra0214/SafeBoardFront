@@ -41,16 +41,18 @@ const DashboardPasajeros = ({ onLogout }) => {
         const responseUp = await fetch('http://52.5.61.144:8080/peopleGoUpTest');
         const dataUp = await responseUp.json();
         setSubidasData(dataUp.map(item => {
-          const date = new Date(item.created_at);
-          const formattedTime = date.toLocaleString('es-MX', {
+          // Generar la hora actual en el frontend
+          const now = new Date();
+          const formattedTime = now.toLocaleTimeString('es-MX', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false
           });
+
           return {
             ...item,
-            hora: formattedTime
+            hora: formattedTime // Agregar la hora generada al objeto
           };
         }));
 
@@ -58,16 +60,18 @@ const DashboardPasajeros = ({ onLogout }) => {
         const responseDown = await fetch('http://52.5.61.144:8080/peopleGoDown');
         const dataDown = await responseDown.json();
         setBajadasData(dataDown.map(item => {
-          const date = new Date(item.created_at);
-          const formattedTime = date.toLocaleString('es-MX', {
+          // Generar la hora actual en el frontend
+          const now = new Date();
+          const formattedTime = now.toLocaleTimeString('es-MX', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false
           });
+
           return {
             ...item,
-            hora: formattedTime
+            hora: formattedTime // Agregar la hora generada al objeto
           };
         }));
       } catch (error) {
