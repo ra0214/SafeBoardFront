@@ -11,7 +11,12 @@ const TableContainer = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const TableHeader = styled.thead`
+const StyledTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TableHead = styled.thead`
   background-color: #f5f5f5;
 `;
 
@@ -19,11 +24,6 @@ const TableHeaderCell = styled.th`
   padding: 10px;
   text-align: center;
   border: 1px solid #ddd;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
 `;
 
 const TableRow = styled.tr`
@@ -38,28 +38,37 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
+const Title = styled.h2`
+  text-align: center;
+  padding: 15px;
+  background-color: #5fa6bb;
+  color: white;
+  margin: 0;
+  border-radius: 8px 8px 0 0;
+`;
+
 const PassengerCounter = ({ title, data = [] }) => {
   return (
     <TableContainer>
-      <TableHeader>{title}</TableHeader>
-      <Table>
-        <TableHeader>
-          <tr>
+      <Title>{title}</Title>
+      <StyledTable>
+        <TableHead>
+          <TableRow>
             <TableHeaderCell>ID ESP32</TableHeaderCell>
             <TableHeaderCell>Cantidad</TableHeaderCell>
             <TableHeaderCell>Hora</TableHeaderCell>
-          </tr>
-        </TableHeader>
+          </TableRow>
+        </TableHead>
         <tbody>
           {data.map((item, index) => (
             <TableRow key={index}>
-              <TableCell>{item.esp32_id}</TableCell>
+              <TableCell>{item.esp32_id || 'N/A'}</TableCell>
               <TableCell>{item.conteo}</TableCell>
               <TableCell>{item.hora || new Date().toLocaleTimeString()}</TableCell>
             </TableRow>
           ))}
         </tbody>
-      </Table>
+      </StyledTable>
     </TableContainer>
   );
 };

@@ -8,22 +8,30 @@ class WebSocketService {
             peopleGoDown: new Set(),
             movement: new Set()
         };
+        this.esp32_id = null;
     }
 
-    connect() {
+    connect(esp32_id) {
+        this.esp32_id = esp32_id;
         this.ws = new WebSocket(WS_URL);
 
         this.ws.onopen = () => {
             console.log('✅ Conexión WebSocket establecida');
+            this.ws.send(JSON.stringify({
+                type: 'register',
+                esp32_id: esp32_id
+            }));
         };
 
         this.ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                if (data.type === 'peopleGoUp') {
-                    this.subscribers.peopleGoUp.forEach(callback => callback(data.data));
-                } else if (data.type === 'peopleGoDown') {
-                    this.subscribers.peopleGoDown.forEach(callback => callback(data.data));
+                console.log('Mensaje recibido:', data);
+                
+                if (!data.targetUser || data.targetUser === this.esp32_id) {
+                    if (this.subscribers[data.type]) {
+                        this.subscribers[data.type].forEach(callback => callback(data.data));
+                    }
                 }
             } catch (error) {
                 console.error('Error procesando mensaje:', error);
@@ -32,7 +40,7 @@ class WebSocketService {
 
         this.ws.onclose = () => {
             console.log('Conexión WebSocket cerrada. Intentando reconectar...');
-            setTimeout(() => this.connect(), 5000);
+            setTimeout(() => this.connect(this.esp32_id), 5000);
         };
     }
 

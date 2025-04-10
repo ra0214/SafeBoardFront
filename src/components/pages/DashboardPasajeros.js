@@ -4,7 +4,9 @@ import DashboardHeader from '../organisms/DashboardHeader';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/authService';
 import PassengerCounter from '../molecules/PassengerCounter';
+import { useWebSocket } from '../../contexts/WebSocketContext';
 
+// Componentes estilizados
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,60 +31,69 @@ const CountersContainer = styled.div`
   width: 100%;
 `;
 
+const DeviceInfo = styled.div`
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #5fa6bb;
+  font-weight: bold;
+`;
+
 const DashboardPasajeros = ({ onLogout }) => {
   const navigate = useNavigate();
   const [subidasData, setSubidasData] = useState([]);
   const [bajadasData, setBajadasData] = useState([]);
+  const { wsService } = useWebSocket();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Cargar datos de personas que suben
-        const responseUp = await fetch('http://52.5.61.144:8080/peopleGoUpTest');
-        const dataUp = await responseUp.json();
-        setSubidasData(dataUp.map(item => {
-          // Generar la hora actual en el frontend
-          const now = new Date();
-          const formattedTime = now.toLocaleTimeString('es-MX', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-          });
+    if (!wsService) return;
 
-          return {
-            ...item,
-            hora: formattedTime // Agregar la hora generada al objeto
-          };
-        }));
+    const handlePeopleGoUp = (data) => {
+      // Verificar si los datos son para nuestro ESP32
+      if (data.esp32_id === wsService.esp32_id) {
+        const now = new Date();
+        const formattedTime = now.toLocaleTimeString('es-MX', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
 
-        // Cargar datos de personas que bajan
-        const responseDown = await fetch('http://52.5.61.144:8080/peopleGoDown');
-        const dataDown = await responseDown.json();
-        setBajadasData(dataDown.map(item => {
-          // Generar la hora actual en el frontend
-          const now = new Date();
-          const formattedTime = now.toLocaleTimeString('es-MX', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-          });
-
-          return {
-            ...item,
-            hora: formattedTime // Agregar la hora generada al objeto
-          };
-        }));
-      } catch (error) {
-        console.error('Error al cargar datos:', error);
+        setSubidasData(prev => [...prev, {
+          conteo: data.count,
+          hora: formattedTime,
+          esp32_id: data.esp32_id // Añadir ESP32_ID a los datos
+        }]);
       }
     };
 
-    fetchData();
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    const handlePeopleGoDown = (data) => {
+      // Verificar si los datos son para nuestro ESP32
+      if (data.esp32_id === wsService.esp32_id) {
+        const now = new Date();
+        const formattedTime = now.toLocaleTimeString('es-MX', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+
+        setBajadasData(prev => [...prev, {
+          conteo: data.count,
+          hora: formattedTime,
+          esp32_id: data.esp32_id // Añadir ESP32_ID a los datos
+        }]);
+      }
+    };
+
+    wsService.subscribe('peopleGoUp', handlePeopleGoUp);
+    wsService.subscribe('peopleGoDown', handlePeopleGoDown);
+
+    return () => {
+      wsService.unsubscribe('peopleGoUp', handlePeopleGoUp);
+      wsService.unsubscribe('peopleGoDown', handlePeopleGoDown);
+    };
+  }, [wsService]);
 
   const handleLogout = () => {
     logout();
@@ -96,14 +107,17 @@ const DashboardPasajeros = ({ onLogout }) => {
     <DashboardContainer>
       <DashboardHeader onLogout={handleLogout} />
       <Content>
+        <DeviceInfo>
+          Dispositivo conectado: {wsService?.esp32_id || 'No identificado'}
+        </DeviceInfo>
         <CountersContainer>
           <PassengerCounter 
             title="Personas que Suben" 
-            data={subidasData} 
+            data={subidasData.filter(item => item.esp32_id === wsService?.esp32_id)} 
           />
           <PassengerCounter 
             title="Personas que Bajan" 
-            data={bajadasData} 
+            data={bajadasData.filter(item => item.esp32_id === wsService?.esp32_id)} 
           />
         </CountersContainer>
       </Content>

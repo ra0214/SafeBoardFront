@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import DashboardHeader from '../organisms/DashboardHeader';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../services/authService';
-import { fetchPasajeros } from '../../services/apiService';
+import { useWebSocket } from '../../contexts/WebSocketContext';
 
+// Componentes estilizados
 const DashboardContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -20,6 +21,12 @@ const Content = styled.div`
   box-sizing: border-box;
 `;
 
+const Title = styled.h1`
+  color: #2d3436;
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
 const TotalCard = styled.div`
   background-color: white;
   border-radius: 10px;
@@ -30,9 +37,10 @@ const TotalCard = styled.div`
   width: 100%;
 `;
 
-const Title = styled.h1`
-  color: #2d3436;
-  margin-bottom: 20px;
+const Label = styled.div`
+  font-size: 18px;
+  color: #636e72;
+  text-align: center;
 `;
 
 const TotalNumber = styled.div`
@@ -41,12 +49,6 @@ const TotalNumber = styled.div`
   color: #5fa6bb;
   text-align: center;
   margin: 20px 0;
-`;
-
-const Label = styled.div`
-  font-size: 18px;
-  color: #636e72;
-  text-align: center;
 `;
 
 const InputContainer = styled.div`
@@ -93,21 +95,29 @@ const DashboardTotal = ({ onLogout }) => {
   const [precio, setPrecio] = useState('');
   const [totalIngresos, setTotalIngresos] = useState(0);
   const [totalPasajeros, setTotalPasajeros] = useState(0);
+  const { wsService } = useWebSocket();
 
   useEffect(() => {
-    const obtenerPasajeros = async () => {
-      try {
-        await fetchPasajeros((data) => {
-          const total = data.reduce((sum, item) => sum + item.conteo, 0);
-          setTotalPasajeros(total);
+    if (!wsService) return;
+
+    const handlePeopleGoUp = (data) => {
+      console.log('Datos recibidos de peopleGoUp:', data); // Log para depuración
+      // Verificar si los datos son para este dispositivo ESP32
+      if (data.esp32_id && data.esp32_id === wsService.esp32_id) {
+        setTotalPasajeros(prev => {
+          const newTotal = prev + (data.count || 0);
+          console.log('Nuevo total de pasajeros:', newTotal);
+          return newTotal;
         });
-      } catch (error) {
-        console.error('Error al obtener los datos de pasajeros:', error);
       }
     };
 
-    obtenerPasajeros();
-  }, []);
+    wsService.subscribe('peopleGoUp', handlePeopleGoUp);
+
+    return () => {
+      wsService.unsubscribe('peopleGoUp', handlePeopleGoUp);
+    };
+  }, [wsService]);
 
   const calcularIngresos = () => {
     if (!precio || isNaN(precio)) {
@@ -116,10 +126,14 @@ const DashboardTotal = ({ onLogout }) => {
     }
     const ingresos = totalPasajeros * parseFloat(precio);
     setTotalIngresos(ingresos);
+    localStorage.setItem('totalIngresos', ingresos);
   };
 
   const handleLogout = () => {
     logout();
+    if (onLogout) {
+      onLogout();
+    }
     navigate('/', { replace: true });
   };
 
@@ -131,6 +145,7 @@ const DashboardTotal = ({ onLogout }) => {
         <TotalCard>
           <Label>Total de pasajeros que subieron</Label>
           <TotalNumber>{totalPasajeros}</TotalNumber>
+          <Label>Dispositivo ESP32: {wsService?.esp32_id || 'No conectado'}</Label>
         </TotalCard>
         
         <TotalCard>

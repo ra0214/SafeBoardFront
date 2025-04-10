@@ -5,6 +5,7 @@ import DashboardPasajeros from './components/pages/DashboardPasajeros';
 import DashboardTotal from './components/pages/DashboardTotal';
 import DashboardConduccion from './components/pages/DashboardConduccion';
 import RegisterPage from './components/pages/RegisterPage';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,56 +30,58 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route 
-          path="/" 
-          element={
-            isAuthenticated ? 
-            <Navigate to="/monitor-pasajeros" /> : 
-            <LoginPage onLoginSuccess={handleLoginSuccess} />
-          } 
-        />
-        
-        <Route 
-          path="/monitor-pasajeros" 
-          element={
-            isAuthenticated ? 
-            <DashboardPasajeros onLogout={handleLogout} /> : 
-            <Navigate to="/" />
-          } 
-        />
-        
-        <Route 
-          path="/register" 
-          element={
-            isAuthenticated && isAdmin ? 
-            <RegisterPage onLogout={handleLogout} /> : 
-            <Navigate to="/monitor-pasajeros" />
-          } 
-        />
+    <WebSocketProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              isAuthenticated ? 
+              <Navigate to="/monitor-pasajeros" /> : 
+              <LoginPage onLoginSuccess={handleLoginSuccess} />
+            } 
+          />
+          
+          <Route 
+            path="/monitor-pasajeros" 
+            element={
+              isAuthenticated ? 
+              <DashboardPasajeros onLogout={handleLogout} /> : 
+              <Navigate to="/" />
+            } 
+          />
+          
+          <Route 
+            path="/register" 
+            element={
+              isAuthenticated && isAdmin ? 
+              <RegisterPage onLogout={handleLogout} /> : 
+              <Navigate to="/monitor-pasajeros" />
+            } 
+          />
 
-        <Route 
-          path="/total-pasajeros" 
-          element={
-            isAuthenticated ? 
-            <DashboardTotal onLogout={handleLogout} /> : 
-            <Navigate to="/" />
-          } 
-        />
+          <Route 
+            path="/total-pasajeros" 
+            element={
+              isAuthenticated ? 
+              <DashboardTotal onLogout={handleLogout} /> : 
+              <Navigate to="/" />
+            } 
+          />
 
-        <Route 
-          path="/monitor-conduccion" 
-          element={
-            isAuthenticated ? 
-            <DashboardConduccion onLogout={handleLogout} /> : 
-            <Navigate to="/" />
-          } 
-        />
+          <Route 
+            path="/monitor-conduccion" 
+            element={
+              isAuthenticated ? 
+              <DashboardConduccion onLogout={handleLogout} /> : 
+              <Navigate to="/" />
+            } 
+          />
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </WebSocketProvider>
   );
 }
 
